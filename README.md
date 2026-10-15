@@ -8,7 +8,7 @@
 
 Windows 用户下载并解压下面的完整运行包，双击其中的 `压缩包整合工具v1.3.exe` 即可使用：
 
-[下载压缩包整合工具 v1.3.0](https://github.com/xiaohuangya617/archive-integration-tool/releases/download/v1.3.0/archive-integration-tool-v1.3.0-windows-x64.zip)
+[下载压缩包整合工具 v1.3.0](https://github.com/xiaohuangya617/Flux-pack-merge/releases/download/v1.3.0/archive-integration-tool-v1.3.0-windows-x64.zip)
 
 请使用“解压全部”保留目录结构，不要只提取 EXE 文件。
 
