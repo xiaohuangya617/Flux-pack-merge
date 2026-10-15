@@ -2,6 +2,14 @@
 
 一个面向 Windows 的压缩包整合工具。它可以把多个压缩包解压到同一工作目录，再重新输出为一个压缩包，适合整理分卷包、素材包和下载包。
 
+## 直接下载
+
+Windows 用户下载并解压下面的完整运行包，双击其中的 `压缩包整合工具v1.3.exe` 即可使用：
+
+[下载压缩包整合工具 v1.3.0](https://github.com/xiaohuangya617/archive-integration-tool/releases/download/v1.3.0/archive-integration-tool-v1.3.0-windows-x64.zip)
+
+请使用“解压全部”保留目录结构，不要只提取 EXE 文件。
+
 ## 功能
 
 - 支持通过文件选择或拖拽添加多个压缩包。
