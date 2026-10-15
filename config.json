@@ -1,9 +1,0 @@
-{
-  "config_version": 2,
-  "output_dir": "E:\\！download",
-  "fmt": "zip",
-  "rule": 2,
-  "prefix": "",
-  "seq_mode": "single",
-  "keep_orig": true
-}

@@ -1,1 +1,13 @@
-验收要点v1.3.txt
+# 本地 Python 环境与生成物
+.venv/
+.venv-*/
+__pycache__/
+*/__pycache__/
+*.py[cod]
+构建/
+发布/
+config.json
+
+# 测试脚本运行时生成的夹具
+测试/data/
+测试/真实用例/

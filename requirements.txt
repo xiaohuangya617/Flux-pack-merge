@@ -1,0 +1,2 @@
+pywebview>=6.0
+py7zr>=1.0
