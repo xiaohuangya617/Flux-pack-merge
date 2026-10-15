@@ -31,8 +31,7 @@ RAR 输出需要本机安装并可调用 WinRAR。ZIP 和 7Z 输出不依赖 Win
 压缩包整合工具v1.3/
 ├─ 压缩包整合工具v1.3.exe
 ├─ _internal/
-├─ config.json
-└─ 验收要点v1.3.txt
+└─ config.json
 ```
 
 请不要只复制主程序 EXE；缺少 `_internal` 目录会导致程序无法启动。
