@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>压缩包整合工具 v1.3</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Microsoft YaHei", "PingFang SC", sans-serif; }
+  body { background: linear-gradient(160deg, #eaf2ff 0%, #f7fbff 50%, #eef6ff 100%); min-height: 100vh; padding: 24px 22px 40px; color: #1f2d3d; }
+  .wrap { max-width: 1000px; margin: 0 auto; }
+
+  .head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+  .head-l { display: flex; align-items: center; gap: 12px; }
+  .logo { width: 38px; height: 38px; border-radius: 11px; background: #185FA5; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 600; box-shadow: 0 3px 8px rgba(24, 95, 165, .25); }
+  .head h1 { font-size: 20px; font-weight: 600; color: #0C447C; letter-spacing: 1px; }
+  .head .sub { font-size: 12px; color: #5a7184; margin-top: 2px; }
+  .tag { font-size: 12px; color: #185FA5; background: #E6F1FB; border: 1px solid #B5D4F4; border-radius: 999px; padding: 3px 12px; }
+
+  .card { background: #fff; border: 1px solid #e3ecf7; border-radius: 16px; padding: 18px 20px; margin-bottom: 16px; box-shadow: 0 2px 12px rgba(24, 95, 165, .06); }
+  .st { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: #0C447C; margin-bottom: 14px; }
+  .st::before { content: ''; width: 4px; height: 15px; border-radius: 2px; background: #185FA5; }
+
+
+  .btn-pri { background: #185FA5; color: #fff; border: none; border-radius: 9px; padding: 9px 22px; font-size: 13px; cursor: pointer; box-shadow: 0 2px 6px rgba(24, 95, 165, .25); }
+  .btn-pri:hover { background: #0C447C; }
+  .btn-pri:disabled { background: #aab7c4; color: #f7f9fb; opacity: 1; cursor: not-allowed; box-shadow: none; }
+  .btn-ghost { background: #fff; color: #185FA5; border: 1px solid #B5D4F4; border-radius: 8px; padding: 6px 14px; font-size: 12px; cursor: pointer; height: 34px; }
+  .btn-ghost:hover { background: #E6F1FB; }
+  .btn-danger { background: #fff; color: #A32D2D; border: 1px solid #F09595; border-radius: 8px; padding: 6px 14px; font-size: 12px; cursor: pointer; height: 34px; }
+  .btn-danger:hover { background: #FCEBEB; }
+
+  .list-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; font-weight: 600; color: #0C447C; padding: 9px 10px; background: #F0F6FF; white-space: nowrap; }
+  th:first-child { border-radius: 8px 0 0 8px; }
+  th:last-child { border-radius: 0 8px 8px 0; }
+  td { padding: 9px 10px; border-bottom: 1px solid #eef3fa; white-space: nowrap; }
+  tbody tr:hover td { background: #F7FBFF; }
+  .badge { display: inline-block; font-size: 11px; padding: 2px 10px; border-radius: 999px; background: #E6F1FB; color: #185FA5; border: 1px solid #B5D4F4; }
+  .badge.bad { background: #FCEBEB; color: #A32D2D; border-color: #F09595; }
+  .badge.pending { background: #F2F4F7; color: #5a7184; border-color: #d7dee7; }
+  .badge.skip { background: #FFF4E5; color: #8A4B08; border-color: #F4C47C; }
+  .rb { width: 26px; height: 24px; border-radius: 7px; border: 1px solid #c9d9ee; background: #fff; color: #1f2d3d; font-size: 12px; line-height: 1; cursor: pointer; }
+  .rb:hover { background: #E6F1FB; border-color: #185FA5; color: #185FA5; }
+  .empty { text-align: center; color: #9fb3c7; padding: 26px 0; font-size: 13px; }
+
+  .rules { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .rc { border: 1px solid #e3ecf7; border-radius: 12px; padding: 13px 16px; cursor: pointer; background: #fff; transition: all .15s; }
+  .rc:hover { border-color: #85B7EB; }
+  .rc.on { border: 2px solid #185FA5; background: #F0F6FF; }
+  .rc .rt { font-size: 14px; font-weight: 600; color: #1f2d3d; margin-bottom: 3px; }
+  .rc.on .rt { color: #0C447C; }
+  .rc .rd { font-size: 12px; color: #5a7184; }
+
+  .cfg { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 14px; margin-top: 16px; }
+  .citem { display: flex; flex-direction: column; gap: 6px; }
+  .citem.grow { flex: 1; min-width: 220px; }
+  .citem label { font-size: 12px; color: #5a7184; }
+  input, select { height: 34px; padding: 0 10px; border: 1px solid #c9d9ee; border-radius: 8px; font-size: 13px; outline: none; background: #fff; color: #1f2d3d; }
+  input:focus, select:focus { border-color: #185FA5; box-shadow: 0 0 0 2px rgba(24, 95, 165, .12); }
+
+  .sw { display: flex; align-items: center; gap: 8px; height: 34px; }
+  .sw input { display: none; }
+  .swbox { width: 38px; height: 21px; border-radius: 999px; background: #c9d9ee; position: relative; cursor: pointer; transition: background .15s; flex-shrink: 0; }
+  .swbox::after { content: ''; position: absolute; top: 2px; left: 2px; width: 17px; height: 17px; border-radius: 50%; background: #fff; transition: left .15s; box-shadow: 0 1px 3px rgba(15, 40, 80, .3); }
+  .sw input:checked + .swbox { background: #185FA5; }
+  .sw input:checked + .swbox::after { left: 19px; }
+  .swtxt { font-size: 13px; color: #1f2d3d; }
+
+  .pv { font-size: 13px; background: #F0F6FF; border-radius: 8px; padding: 8px 12px; font-family: Consolas, monospace; color: #0C447C; border: 1px solid #e3ecf7; }
+
+  .foot { display: flex; align-items: center; gap: 16px; }
+  .status { font-size: 13px; color: #5a7184; }
+  .bar { display: flex; align-items: center; gap: 12px; margin-top: 16px; }
+  .pbar { flex: 1; height: 10px; border-radius: 999px; background: #e8f0fa; border: 1px solid #d8e5f5; overflow: hidden; }
+  .pfill { height: 100%; width: 0%; background: linear-gradient(90deg, #85B7EB, #185FA5); border-radius: 999px; transition: width .2s; }
+  .pct { font-size: 13px; color: #5a7184; width: 44px; text-align: right; font-variant-numeric: tabular-nums; }
+  .space-info { margin-top: 9px; min-height: 18px; font-size: 12px; color: #5a7184; }
+  .space-info.ok { color: #1E6B3A; }
+  .space-info.bad { color: #A32D2D; }
+
+  /* ---- v1.1 ④ 输出设置：三行布局 ---- */
+  .cfg-row { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 14px; width: 100%; }
+  .foot-actions { display: flex; align-items: center; gap: 8px; }
+
+  /* ---- v1.1 ① 卡片精简：标题 + 提示 + ➕ ---- */
+  .add-hint { display: flex; align-items: center; gap: 12px; }
+  .add-tip { font-size: 12px; color: #5a7184; white-space: nowrap; }
+  .btn-add {
+    width: 34px; height: 34px; border-radius: 50%; border: none; cursor: pointer;
+    background: #185FA5; color: #fff; font-size: 20px; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 6px rgba(24, 95, 165, .3); transition: all .15s;
+  }
+  .btn-add:hover { background: #0C447C; transform: scale(1.06); }
+
+  /* ---- v1.1 列表：列固定 + 文件名列内滚动 ---- */
+  table { table-layout: fixed; }
+  th.fname-th, td.fname { width: auto; }
+  th.fix-w { width: 90px; }
+  .fname { padding: 0 !important; }
+  .fname-scroll {
+    overflow-x: auto; white-space: nowrap; padding: 9px 10px;
+    user-select: none; -webkit-user-select: none; cursor: pointer;
+    scrollbar-width: thin;
+  }
+  .fname-scroll::-webkit-scrollbar { height: 5px; }
+  .fname-scroll::-webkit-scrollbar-thumb { background: #c9d9ee; border-radius: 999px; }
+  .fname-scroll:hover { color: #185FA5; }
+  .fname-scroll.copied { color: #1E8E3E; font-weight: 600; }
+  .fname-scroll.copied::after { content: ' 已复制 ✓'; font-size: 11px; color: #1E8E3E; }
+  .fname-scroll.copied.fail { color: #A32D2D; }
+  .fname-scroll.copied.fail::after { content: ' 复制失败'; color: #A32D2D; }
+
+  /* ---- v1.1 行拖拽手柄与指示 ---- */
+  th.grip-th, td.grip { width: 36px; text-align: center; }
+  td.grip { cursor: grab; color: #9fb3c7; font-size: 14px; }
+  td.grip:hover { color: #185FA5; }
+  td.grip:active { cursor: grabbing; }
+  tbody.dragging tr { opacity: .55; }
+  tbody.dragging tr.drag-src { opacity: .35; }
+  tr.drop-before td:first-child { border-top: 2px solid #185FA5; }
+  tr.drop-after td:first-child { border-bottom: 2px solid #185FA5; }
+
+  /* ---- v1.1 全局拖拽遮罩（纯视觉，不拦截事件） ---- */
+  .drop-mask {
+    display: none; position: fixed; inset: 0; z-index: 99;
+    background: rgba(24, 95, 165, .16); pointer-events: none;
+    align-items: center; justify-content: center;
+  }
+  .drop-mask.show { display: flex; }
+  .drop-mask-inner {
+    background: #fff; color: #0C447C; font-size: 15px; font-weight: 600;
+    border: 2px dashed #185FA5; border-radius: 16px; padding: 22px 48px;
+    box-shadow: 0 12px 40px rgba(24, 95, 165, .2);
+  }
+
+  .modal-mask { display: none; position: fixed; inset: 0; background: rgba(15, 40, 80, .35); z-index: 100; align-items: center; justify-content: center; }
+  .modal-mask.show { display: flex; }
+  .modal { background: #fff; border-radius: 16px; width: 560px; max-width: 92vw; max-height: 82vh; display: flex; flex-direction: column; box-shadow: 0 12px 40px rgba(15, 40, 80, .25); }
+  .modal h3 { font-size: 15px; font-weight: 600; color: #0C447C; padding: 16px 20px 0; }
+  .modal-body { padding: 12px 20px; overflow-y: auto; font-size: 13px; color: #1f2d3d; }
+  .modal-foot { padding: 14px 20px 18px; display: flex; gap: 10px; justify-content: flex-end; }
+  .conf-row { border: 1px solid #F09595; background: #FCEBEB; border-radius: 8px; padding: 8px 12px; margin-bottom: 8px; }
+  .conf-row .t { font-family: Consolas, monospace; color: #791F1F; }
+  .conf-row .s { font-size: 12px; color: #5a7184; margin-top: 3px; }
+  .stat-line { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #eef3fa; font-size: 13px; }
+  .stat-line:last-child { border-bottom: none; }
+  .stat-line b { color: #0C447C; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <div class="head-l">
+      <div class="logo">包</div>
+      <div>
+        <h1>压缩包整合工具</h1>
+        <div class="sub">批量解压重命名 · 平铺打包为单个压缩包</div>
+      </div>
+    </div>
+    <span class="tag">v1.3</span>
+  </div>
+
+  <div class="card" style="display:flex;align-items:center;justify-content:space-between">
+    <p class="st" style="margin:0">① 添加压缩包</p>
+    <div class="add-hint">
+      <span class="add-tip">可将 zip / rar / 7z 文件或文件夹拖入窗口任意位置</span>
+      <button class="btn-add" id="btnAdd" title="选择文件夹批量添加">＋</button>
+    </div>
+  </div>
+
+  <div class="drop-mask" id="dropMask"><div class="drop-mask-inner">松开鼠标，添加压缩包</div></div>
+
+  <div class="card">
+    <div class="list-head">
+      <p class="st" style="margin:0">② 压缩包列表</p>
+      <button class="btn-ghost" id="btnClear">清空</button>
+    </div>
+    <div style="overflow-x:auto">
+    <table>
+      <thead>
+        <tr>
+          <th class="grip-th"></th>
+          <th style="width:44px">序号</th>
+          <th>文件名</th>
+          <th class="fix-w">大小</th>
+          <th style="width:70px">文件数</th>
+          <th style="width:70px">状态</th>
+          <th style="width:110px">操作</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    </div>
+    <div class="empty" id="empty">尚未添加压缩包——可拖入窗口任意位置，或点击右上角加号选择文件夹</div>
+  </div>
+
+  <div class="card">
+    <p class="st">③ 命名规则</p>
+    <div class="rules">
+      <div class="rc" id="rc1" onclick="pickRule(1)"><p class="rt">规则一 · 统一前缀</p><p class="rd">所有文件统一加自定义前缀</p></div>
+      <div class="rc on" id="rc2" onclick="pickRule(2)"><p class="rt">规则二 · 序列前缀</p><p class="rd">按包顺序自动递增，默认 a-z</p></div>
+    </div>
+    <div class="cfg">
+      <div class="citem">
+        <label>原文件名</label>
+        <div class="sw">
+          <input type="checkbox" id="keep" checked onchange="pv()">
+          <label class="swbox" for="keep"></label>
+          <span class="swtxt">保留</span>
+        </div>
+      </div>
+      <div class="citem" id="cfgA1" style="display:none">
+        <label>自定义前缀</label>
+        <input id="prefix" style="width:180px" oninput="pv()">
+      </div>
+      <div class="citem" id="cfgA2">
+        <label>序列模式</label>
+        <select id="seq" style="width:200px" onchange="pv()">
+          <option value="single">单字母 a~z</option>
+          <option value="double">双字母 aa~zz</option>
+          <option value="num">数字 1~999</option>
+          <option value="numz">补零数字 001~999</option>
+        </select>
+      </div>
+      <div class="citem">
+        <label>连接符</label>
+        <!-- v1.3：默认 -，且不随配置记忆（每次启动固定） -->
+        <select id="sep" style="width:90px" onchange="pv()">
+          <option value="-" selected>-</option>
+          <option value="_">_</option>
+          <option value="">无</option>
+        </select>
+      </div>
+      <div class="citem grow">
+        <label>效果预览</label>
+        <div class="pv" id="pv"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="st">④ 输出设置</p>
+    <div class="cfg">
+      <div class="citem grow" style="flex-basis:100%">
+        <label>输出文件名</label>
+        <input id="outname" style="width:100%">
+      </div>
+      <div class="cfg-row">
+        <!-- v1.3 修正：输出目录恢复弹性占满剩余空间（固定 250px 会
+             让「开始输出」按钮大幅前移，观感差）；删除开关仍保持
+             在输出格式与按钮之间 -->
+        <div class="citem grow">
+          <label>输出目录</label>
+          <div style="display:flex;gap:8px"><input id="outdir" style="flex:1;min-width:240px"><button class="btn-ghost" id="btnBrowse">浏览</button></div>
+        </div>
+        <div class="citem">
+          <label>输出格式</label>
+          <!-- v1.3：zip 为默认，rar 需 WinRAR（探测禁用），7z 最末 -->
+          <select id="fmt" style="width:140px">
+            <option value="zip" selected>zip（默认）</option>
+            <option value="rar">rar</option>
+            <option value="7z">7z</option>
+          </select>
+        </div>
+        <!-- v1.3：整合后删除源文件开关（默认关；开启后完成时询问删除，走回收站） -->
+        <div class="citem">
+          <label>整合后删除源文件</label>
+          <div class="sw">
+            <input type="checkbox" id="delSrc">
+            <label class="swbox" for="delSrc"></label>
+            <span class="swtxt" id="delSrcTxt">关</span>
+          </div>
+        </div>
+        <div class="foot-actions">
+          <button class="btn-pri" id="go" aria-disabled="true" disabled onclick="startRun()">开始输出</button>
+          <button class="btn-ghost" id="cancel" style="display:none" onclick="cancelRun()">取消</button>
+        </div>
+      </div>
+      <div class="bar">
+        <div class="pbar"><div class="pfill" id="fill"></div></div>
+        <span class="pct" id="pct">0%</span>
+        <span class="status" id="st">就绪</span>
+      </div>
+      <div class="space-info" id="spaceInfo">请先添加压缩包并选择输出目录</div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-mask" id="outputMask">
+  <div class="modal" style="width:520px">
+    <h3>输出文件已存在</h3>
+    <div class="modal-body">
+      <p style="color:#5a7184;margin-bottom:10px">目标位置已有同名文件。建议生成新名称，避免覆盖原内容。</p>
+      <div class="conf-row"><div class="t" id="outputExistsPath"></div></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ghost" onclick="resolveOutput('cancel')">取消任务</button>
+      <button class="btn-danger" onclick="resolveOutput('overwrite')">覆盖已有文件</button>
+      <button class="btn-pri" id="outputNew" onclick="resolveOutput('new')">生成新名称</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-mask" id="sequenceMask">
+  <div class="modal" style="width:520px">
+    <h3>序列规则容量不足</h3>
+    <div class="modal-body">
+      <p id="sequenceWarning"></p>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ghost" onclick="closeSequenceWarning()">返回修改</button>
+      <button class="btn-ghost" id="seqNumAction" onclick="applySequenceMode('num')">改为数字</button>
+      <button class="btn-pri" id="seqDoubleAction" onclick="applySequenceMode('double')">改为 aa-zz</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-mask" id="conflictMask">
+  <div class="modal">
+    <h3>发现同名文件冲突</h3>
+    <div class="modal-body">
+      <p style="color:#5a7184;margin-bottom:10px">以下目标文件名出现重复，请选择处理方式（作用于全部冲突）：</p>
+      <div id="conflictList"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ghost" onclick="resolve('cancel')">取消任务</button>
+      <button class="btn-ghost" onclick="resolve('reseq')">序列命名</button>
+      <button class="btn-pri" onclick="resolve('auto')">自动加序号</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-mask" id="msgMask">
+  <div class="modal" style="width:480px">
+    <h3 id="msgTitle">提示</h3>
+    <div class="modal-body" id="msgBody"></div>
+    <div class="modal-foot">
+      <button class="btn-pri" onclick="closeMsg()">知道了</button>
+    </div>
+  </div>
+</div>
+
+<!-- v1.3：整合完成后的删除源文件确认弹窗（仅在开关开启时出现） -->
+<div class="modal-mask" id="delMask">
+  <div class="modal" style="width:520px">
+    <h3>删除源文件</h3>
+    <div class="modal-body">
+      <p style="color:#5a7184;margin-bottom:10px">以下源压缩包已整合完成。是否将其移入回收站？</p>
+      <div class="conf-row" style="border-color:#c9d9ee;background:#F0F6FF">
+        <div id="delList" style="max-height:150px;overflow-y:auto;font-size:12px;color:#1f2d3d"></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ghost" onclick="resolveDelete(false)">保留</button>
+      <button class="btn-danger" onclick="resolveDelete(true)">删除</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var rule = 2;
+var files = [];        // [{path,name,size,count,status,unpacked_size}]
+var running = false;
+var conflictList = [];
+var readiness = { ready: false, reasons: [{ code: 'no_files', message: '请先添加压缩包' }] };
+var readinessTimer = null;
+var analysisGeneration = 0;
+var sequenceWarningKey = '';
+var rarAvailable = true;
+// v1.3：删除流程。onDone 时若开关开启且有成功源包，记录待删列表；
+// 用户关闭完成报告弹窗后（closeMsg）才弹删除确认，避免流程叠加。
+var deletePending = null;
+
+// v1.3：开关状态文字联动（关/开），默认关
+document.getElementById('delSrc').addEventListener('change', function () {
+  document.getElementById('delSrcTxt').textContent = this.checked ? '开' : '关';
+});
+
+function fmtSize(b) {
+  if (b >= 1048576) return (b / 1048576).toFixed(1) + ' MB';
+  if (b >= 1024) return (b / 1024).toFixed(0) + ' KB';
+  return b + ' B';
+}
+function fmtCount(c) { return c < 0 ? '—' : c; }
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+
+function statusLabel(status) {
+  return {
+    pending: '待检查', checking: '检查中', ready: '就绪',
+    skip_empty: '空包·跳过', skip_locked: '加密·跳过',
+    skip_broken: '损坏·跳过', unsupported: '不可用'
+  }[status] || '待检查';
+}
+function statusClass(status) {
+  if (status === 'ready') return '';
+  if (status && status.indexOf('skip_') === 0) return 'skip';
+  if (status === 'unsupported') return 'bad';
+  return 'pending';
+}
+
+function render() {
+  var tb = document.getElementById('tbody');
+  tb.innerHTML = '';
+  files.forEach(function (f, i) {
+    var tr = document.createElement('tr');
+    var name = esc(f.name);
+    var status = f.status || 'pending';
+    var badgeClass = statusClass(status);
+    // 手柄列（draggable 只挂手柄，不挂整行——保文件名点击复制）
+    // 文件名列内嵌横向滚动容器（仅文件名区域可滑动，其余列固定）
+    // 点击复制：不内联传文件名（引号转义地狱），函数内从 textContent 读取
+    tr.innerHTML =
+      '<td class="grip" draggable="true" title="按住拖动排序">⠿</td>' +
+      '<td>' + (i + 1) + '</td>' +
+      '<td class="fname"><div class="fname-scroll" title="' + name + '" onclick="copyFileName(this)">' + name + '</div></td>' +
+      '<td>' + fmtSize(f.size) + '</td>' +
+      '<td>' + fmtCount(f.count) + '</td>' +
+      '<td><span class="badge ' + badgeClass + '">' + statusLabel(status) + '</span></td>' +
+      '<td><button class="rb" onclick="mvRow(this,-1)">↑</button> <button class="rb" onclick="mvRow(this,1)">↓</button> <button class="rb" onclick="rmRow(this)">×</button></td>';
+    tb.appendChild(tr);
+  });
+  document.getElementById('empty').style.display = files.length ? 'none' : 'block';
+  updateStatus();
+  scheduleReadiness();
+}
+
+function mvRow(btn, dir) {
+  var tr = btn.parentNode.parentNode, i = Array.prototype.indexOf.call(tr.parentNode.children, tr);
+  var j = i + dir;
+  if (j < 0 || j >= files.length) return;
+  var t = files[i]; files[i] = files[j]; files[j] = t;
+  render();
+}
+function rmRow(btn) {
+  var tr = btn.parentNode.parentNode, i = Array.prototype.indexOf.call(tr.parentNode.children, tr);
+  files.splice(i, 1); render();
+}
+function clearRows() { files = []; render(); }
+document.getElementById('btnClear').onclick = clearRows;
+
+// ---------------- v1.2 文件名点击复制（三级降级，去除压缩包后缀） ----------------
+// file:// 协议下 navigator.clipboard 可能不可用，降级链：
+//   1) execCommand('copy')（Chromium 兼容，file:// 可用）
+//   2) navigator.clipboard.writeText（secure context 可用时）
+//   3) Python 桥 api().copy_text() -> 系统 clip.exe（最终兜底）
+function flashCopied(el, failed) {
+  el.classList.remove('fail');
+  el.classList.add('copied');
+  if (failed) el.classList.add('fail');
+  if (el._copyTimer) clearTimeout(el._copyTimer);
+  el._copyTimer = setTimeout(function () {
+    el.classList.remove('copied', 'fail');
+  }, 1500);
+}
+
+function copyFileName(el) {
+  var name = stripArchiveExt(el.textContent);  // 从 DOM 取原文，并去除末尾扩展名
+  if (!name) { flashCopied(el, true); return; }
+  try {
+    var ta = document.createElement('textarea');
+    ta.value = name;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    var ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    if (ok) { flashCopied(el); return; }
+  } catch (e) { /* 继续降级 */ }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(name).then(
+      function () { flashCopied(el); },
+      function () { pyCopyText(name, el); }
+    );
+    return;
+  }
+  pyCopyText(name, el);
+}
+
+function stripArchiveExt(name) {
+  return String(name || '').replace(/\.(zip|rar|7z)$/i, '');
+}
+
+function pyCopyText(name, el) {
+  try {
+    api().copy_text(name).then(function (ok) { flashCopied(el, !ok); });
+  } catch (e) {
+    flashCopied(el, true);
+  }
+}
+
+// ---------------- v1.1 列表行拖拽排序（手柄 ⠿ 触发） ----------------
+// 只挂手柄 draggable：整行不 draggable，文件名点击复制不受抢占；
+// 行内 drop 必须 stopPropagation，防止冒泡触发全局"添加"逻辑。
+var dragFrom = -1;
+var dragTarget = -1;
+var dragPos = 'before';
+
+function rowIndex(tr) {
+  return Array.prototype.indexOf.call(tr.parentNode.children, tr);
+}
+
+function dragCleanup() {
+  var tb = document.getElementById('tbody');
+  tb.classList.remove('dragging');
+  var rows = tb.querySelectorAll('tr.drop-before, tr.drop-after, tr.drag-src');
+  for (var i = 0; i < rows.length; i++) rows[i].classList.remove('drop-before', 'drop-after', 'drag-src');
+  dragFrom = -1; dragTarget = -1;
+}
+
+(function () {
+  var tb = document.getElementById('tbody');
+  tb.addEventListener('dragstart', function (e) {
+    var grip = e.target.closest ? e.target.closest('.grip') : null;
+    if (!grip || running) { e.preventDefault(); return; }
+    dragFrom = rowIndex(grip.closest('tr'));
+    e.dataTransfer.setData('text/plain', String(dragFrom));
+    e.dataTransfer.effectAllowed = 'move';
+    tb.classList.add('dragging');
+    grip.closest('tr').classList.add('drag-src');
+  });
+  tb.addEventListener('dragover', function (e) {
+    var grip = e.target.closest ? e.target.closest('.grip') : null;
+    if (!grip || dragFrom < 0) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    var tr = grip.closest('tr');
+    var rect = tr.getBoundingClientRect();
+    var before = (e.clientY - rect.top) < rect.height / 2;
+    tr.classList.remove('drop-before', 'drop-after');
+    tr.classList.add(before ? 'drop-before' : 'drop-after');
+    dragTarget = rowIndex(tr);
+    dragPos = before ? 'before' : 'after';
+  });
+  tb.addEventListener('dragleave', function (e) {
+    var tr = e.target.closest ? e.target.closest('tr') : null;
+    if (tr) tr.classList.remove('drop-before', 'drop-after');
+  });
+  tb.addEventListener('drop', function (e) {
+    e.preventDefault();
+    e.stopPropagation();  // 关键：不冒泡到 document/body 的全局拖拽处理
+    if (dragFrom < 0 || dragTarget < 0) { dragCleanup(); return; }
+    if (dragTarget !== dragFrom) {
+      var item = files.splice(dragFrom, 1)[0];
+      var at = dragPos === 'before' ? dragTarget : dragTarget + 1;
+      if (dragFrom < dragTarget) at--;  // splice 后索引前移
+      files.splice(at, 0, item);
+      render();
+    }
+    dragCleanup();
+  });
+  tb.addEventListener('dragend', dragCleanup);
+})();
+
+function pickRule(n) {
+  rule = n;
+  document.getElementById('rc1').classList.toggle('on', n === 1);
+  document.getElementById('rc2').classList.toggle('on', n === 2);
+  document.getElementById('cfgA1').style.display = n === 1 ? 'flex' : 'none';
+  document.getElementById('cfgA2').style.display = n === 2 ? 'flex' : 'none';
+  pv();
+  scheduleReadiness();
+}
+function seqLabel() {
+  var v = document.getElementById('seq').value;
+  return { single: 'a', double: 'aa', num: '1', numz: '001' }[v] || 'a';
+}
+function pv() {
+  var p = rule === 1 ? (document.getElementById('prefix').value || '前缀') : seqLabel();
+  var d = document.getElementById('sep').value;
+  var keep = document.getElementById('keep').checked;
+  document.getElementById('pv').textContent = keep ? (p + d + '原文件名') : p;
+  scheduleReadiness();
+}
+
+function setProgress(pct, msg) {
+  document.getElementById('fill').style.width = pct + '%';
+  document.getElementById('pct').textContent = Math.round(pct) + '%';
+  document.getElementById('st').textContent = msg;
+}
+function updateStatus() {
+  if (running) return;
+  var n = files.length;
+  if (!n) document.getElementById('st').textContent = '就绪';
+  else if (readiness && readiness.message) document.getElementById('st').textContent = readiness.message;
+  else document.getElementById('st').textContent = '正在检查压缩包…';
+}
+
+function currentConf() {
+  return {
+    files: files.map(function (f) { return f.path; }),
+    rule: rule,
+    prefix: document.getElementById('prefix').value.trim(),
+    seq_mode: document.getElementById('seq').value,
+    sep: document.getElementById('sep').value,
+    keep_orig: document.getElementById('keep').checked,
+    out_name: document.getElementById('outname').value.trim(),
+    fmt: document.getElementById('fmt').value,
+    output_dir: document.getElementById('outdir').value.trim()
+  };
+}
+
+function formatBytes(n) {
+  if (n === null || n === undefined) return '未知';
+  if (n >= 2 ** 30) return (n / 2 ** 30).toFixed(1) + ' GB';
+  if (n >= 2 ** 20) return (n / 2 ** 20).toFixed(1) + ' MB';
+  return (n / 2 ** 10).toFixed(0) + ' KB';
+}
+
+function applyReadiness(gate) {
+  readiness = gate || { ready: false, reasons: [{ message: '无法读取就绪状态' }] };
+  var blocked = running || !readiness.ready;
+  var go = document.getElementById('go');
+  go.disabled = blocked;
+  go.setAttribute('aria-disabled', blocked ? 'true' : 'false');
+  var info = document.getElementById('spaceInfo');
+  if (readiness.required_bytes !== null && readiness.required_bytes !== undefined) {
+    info.textContent = '预计需要 ' + formatBytes(readiness.required_bytes) + '｜当前可用 ' +
+      formatBytes(readiness.free_bytes) + '｜' + (readiness.ready ? '可以开始' : '空间或其他条件未满足');
+  } else {
+    info.textContent = readiness.message || '请先添加压缩包并选择输出目录';
+  }
+  info.classList.toggle('ok', !!readiness.ready);
+  info.classList.toggle('bad', !readiness.ready && readiness.reasons && readiness.reasons.some(function (r) {
+    return r.code === 'insufficient_space' || r.code === 'sequence_overflow' || r.code === 'rar_unavailable';
+  }));
+  if (readiness.reasons) {
+    var overflow = readiness.reasons.find(function (r) { return r.code === 'sequence_overflow'; });
+    if (overflow) showSequenceWarning(readiness);
+    else sequenceWarningKey = '';
+  }
+  updateStatus();
+}
+
+function scheduleReadiness() {
+  if (readinessTimer) clearTimeout(readinessTimer);
+  readinessTimer = setTimeout(refreshReadiness, 80);
+}
+
+async function refreshReadiness() {
+  readinessTimer = null;
+  if (!window.pywebview || !window.pywebview.api) {
+    applyReadiness({ ready: false, message: files.length ? '正在等待程序桥接…' : '请先添加压缩包', reasons: [] });
+    return;
+  }
+  var gate;
+  try { gate = await api().check_readiness(currentConf()); }
+  catch (e) { gate = { ready: false, message: '无法读取就绪状态', reasons: [] }; }
+  applyReadiness(gate);
+}
+
+function showSequenceWarning(gate) {
+  var r = gate.reasons.find(function (x) { return x.code === 'sequence_overflow'; });
+  var key = (gate.total_count || files.length) + ':' + (document.getElementById('seq').value || 'single');
+  if (key === sequenceWarningKey) return;
+  sequenceWarningKey = key;
+  document.getElementById('sequenceWarning').textContent = r.message + '。请修改序列规则或减少压缩包数量。';
+  var mode = document.getElementById('seq').value;
+  document.getElementById('seqDoubleAction').style.display = mode === 'double' ? 'none' : 'inline-block';
+  document.getElementById('seqNumAction').style.display = (mode === 'num' || mode === 'numz') ? 'none' : 'inline-block';
+  document.getElementById('sequenceMask').classList.add('show');
+}
+function closeSequenceWarning() {
+  // 同一数量+规则只提示一次；数量或规则变化时 showSequenceWarning 会更新 key。
+  document.getElementById('sequenceMask').classList.remove('show');
+}
+function applySequenceMode(mode) {
+  document.getElementById('seq').value = mode;
+  closeSequenceWarning();
+  sequenceWarningKey = '';
+  pv();
+}
+
+// ---------------- 桥接：前端 -> Python ----------------
+function api() { return window.pywebview.api; }
+
+async function pickFolder() {
+  var dirs = await api().pick_folder();
+  if (!dirs || !dirs.length) return;
+  await addPaths(dirs);
+}
+document.getElementById('btnAdd').onclick = pickFolder;
+
+async function browseOut() {
+  var dirs = await api().pick_folder();
+  if (dirs && dirs.length) {
+    document.getElementById('outdir').value = dirs[0];
+    scheduleReadiness();
+  }
+}
+document.getElementById('btnBrowse').onclick = browseOut;
+
+function mergeFiles(list) {
+  var have = {};
+  files.forEach(function (f) { have[f.path] = 1; });
+  var added = [];
+  list.forEach(function (f) {
+    if (!have[f.path]) {
+      if (!f.status) f.status = 'pending';
+      files.push(f); have[f.path] = 1; added.push(f.path);
+    }
+  });
+  if (!added.length) showMsg('提示', '没有新压缩包可添加（已全部在列表中）');
+  render();
+  return added;
+}
+
+async function addPaths(paths) {
+  var list = await api().scan(paths);
+  var added = mergeFiles(list);
+  if (added.length) {
+    var generation = ++analysisGeneration;
+    files.forEach(function (f) {
+      if (added.indexOf(f.path) >= 0) {
+        f.status = 'checking';
+        f.analysisGeneration = generation;
+      }
+    });
+    render();
+    try { await api().analyze_files(added, generation); }
+    catch (e) {
+      if (generation === analysisGeneration) showMsg('出错了', '压缩包检查失败：' + esc(e));
+    }
+  }
+}
+
+// 拖拽（v1.1 全局化）：文件/文件夹拖入窗口任意位置都响应。
+// 关键：只对 dataTransfer.types 含 "Files" 的拖拽响应（行拖拽的自定义
+// 类型不在此列，天然互斥）；路径由 pywebview 侧 body drop 回调推送。
+window.addDropped = function (paths) {
+  if (paths && paths.length) addPaths(paths);
+};
+function hasFiles(e) {
+  return e.dataTransfer && Array.prototype.indexOf.call(e.dataTransfer.types, 'Files') >= 0;
+}
+function showDropMask() { document.getElementById('dropMask').classList.add('show'); }
+function hideDropMask() { document.getElementById('dropMask').classList.remove('show'); }
+(function () {
+  var depth = 0;  // 拖入/拖出嵌套计数，避免子元素间移动误隐藏遮罩
+  document.addEventListener('dragenter', function (e) {
+    if (hasFiles(e)) { e.preventDefault(); depth++; showDropMask(); }
+  });
+  document.addEventListener('dragover', function (e) {
+    if (hasFiles(e)) e.preventDefault();
+  });
+  document.addEventListener('dragleave', function (e) {
+    if (!hasFiles(e)) return;
+    depth = Math.max(0, depth - 1);
+    if (depth === 0) hideDropMask();
+  });
+  document.addEventListener('drop', function (e) {
+    if (hasFiles(e)) e.preventDefault();  // 阻断浏览器默认打开文件；路径由 Python 侧处理
+    depth = 0; hideDropMask();
+  });
+  document.addEventListener('dragend', function () { depth = 0; hideDropMask(); });
+})();
+
+// ---------------- 执行 ----------------
+async function startRun() {
+  if (running) return;
+  var gate = await api().check_readiness(currentConf());
+  applyReadiness(gate);
+  if (!gate.ready) return;
+  running = true;
+  document.getElementById('go').disabled = true;
+  document.getElementById('go').setAttribute('aria-disabled', 'true');
+  document.getElementById('cancel').style.display = 'inline-block';
+  setProgress(0, '正在预演检测…');
+  api().start(currentConf());
+}
+
+function cancelRun() {
+  if (!running) return;
+  api().cancel();
+  setProgress(0, '正在取消…');
+}
+
+function resolve(choice) {
+  document.getElementById('conflictMask').classList.remove('show');
+  api().resolve(choice);
+}
+
+function resolveOutput(choice) {
+  document.getElementById('outputMask').classList.remove('show');
+  api().resolve_output(choice);
+}
+
+// ---------------- 事件：Python -> 前端 ----------------
+window.onConflict = function (list) {
+  conflictList = list;
+  var html = '';
+  list.forEach(function (c) {
+    html += '<div class="conf-row"><div class="t">' + esc(c.target) + '</div><div class="s">来自：' +
+      c.sources.map(esc).join('、') + '</div></div>';
+  });
+  document.getElementById('conflictList').innerHTML = html;
+  document.getElementById('conflictMask').classList.add('show');
+};
+
+window.onArchiveAnalyzed = function (result) {
+  var item = files.find(function (f) { return f.path === result.path; });
+  if (!item) return;  // 用户检查期间删除了条目，忽略迟到结果
+  if (result.generation !== undefined && item.analysisGeneration !== result.generation) return;
+  ['size', 'count', 'unpacked_size', 'status'].forEach(function (key) {
+    if (result[key] !== undefined) item[key] = result[key];
+  });
+  render();
+};
+
+window.onReadiness = function (gate) { applyReadiness(gate); };
+
+window.onOutputExists = function (data) {
+  document.getElementById('outputExistsPath').textContent = data.path || '';
+  document.getElementById('outputMask').classList.add('show');
+  setTimeout(function () { document.getElementById('outputNew').focus(); }, 0);
+};
+
+window.onProgress = function (p) {
+  if (p.pct !== undefined) setProgress(p.pct, p.msg || '处理中…');
+};
+
+window.onDone = function (s) {
+  running = false;
+  document.getElementById('cancel').style.display = 'none';
+  setProgress(100, '完成');
+  var html = '<div class="stat-line"><span>输出文件</span><b>' + esc(s.out || '未生成') + '</b></div>' +
+    '<div class="stat-line"><span>整合文件数</span><b>' + esc(s.files) + ' 个</b></div>' +
+    '<div class="stat-line"><span>压缩包数量</span><b>' + esc(s.packs) + ' 个</b></div>';
+  if (s.bad && s.bad.length) {
+    html += '<div class="stat-line"><span>跳过的坏包</span><b style="color:#A32D2D">' + s.bad.map(esc).join('、') + '</b></div>';
+  }
+  if (s.config_warning) {
+    html += '<div class="stat-line"><span>设置记忆</span><b style="color:#A32D2D">' + esc(s.config_warning) + '</b></div>';
+  }
+  html += '<p style="margin-top:10px;font-size:12px;color:#5a7184">提示：本次输出文件与原压缩包保持独立，原文件未被改动。</p>';
+  showMsg('处理完成', html);
+  // v1.3：开关开启且存在成功整合的源包时，记录待删列表，
+  // 待用户关闭完成报告后（closeMsg）再弹删除确认。
+  deletePending = (document.getElementById('delSrc').checked && s.sources && s.sources.length)
+    ? s.sources.slice() : null;
+  // 完成后清空列表与输出文件名（输出目录保留，便于连续输出）
+  files = [];
+  render();
+  document.getElementById('outname').value = '';
+  scheduleReadiness();
+};
+
+window.onError = function (msg) {
+  running = false;
+  document.getElementById('cancel').style.display = 'none';
+  setProgress(0, '失败');
+  showMsg('出错了', esc(msg));
+  scheduleReadiness();
+};
+
+window.onCancel = function (msg) {
+  running = false;
+  document.getElementById('cancel').style.display = 'none';
+  setProgress(0, msg || '已取消');
+  scheduleReadiness();
+};
+
+function showMsg(title, html) {
+  document.getElementById('msgTitle').textContent = title;
+  document.getElementById('msgBody').innerHTML = html;
+  document.getElementById('msgMask').classList.add('show');
+}
+function closeMsg() {
+  document.getElementById('msgMask').classList.remove('show');
+  // v1.3：关闭完成报告后，若存在待删源包且删除弹窗未显示，则弹出确认
+  if (deletePending && !document.getElementById('delMask').classList.contains('show')) {
+    showDeleteConfirm();
+  }
+}
+
+// ---------------- v1.3 删除源文件流程 ----------------
+function showDeleteConfirm() {
+  if (!deletePending || !deletePending.length) { deletePending = null; return; }
+  var list = deletePending.map(function (p) {
+    var parts = String(p).split(/[\\/]/);
+    return esc(parts[parts.length - 1]);
+  });
+  var shown = list.slice(0, 10).join('<br>');
+  if (list.length > 10) shown += '<br>… 等 ' + list.length + ' 个';
+  document.getElementById('delList').innerHTML = shown;
+  document.getElementById('delMask').classList.add('show');
+}
+
+function resolveDelete(confirm) {
+  document.getElementById('delMask').classList.remove('show');
+  var paths = deletePending || [];
+  deletePending = null;
+  if (!confirm || !paths.length) return;
+  try {
+    api().delete_to_recycle(paths).then(function (r) {
+      if (r && r.ok > 0 && !r.failed) {
+        showMsg('删除完成', '已将 ' + r.ok + ' 个源压缩包移入回收站');
+      } else if (r) {
+        showMsg('部分失败', '成功 ' + (r.ok || 0) + ' 个，失败 ' + (r.failed || 0) + ' 个' +
+          (r.error ? '（' + esc(r.error) + '）' : ''));
+      } else {
+        showMsg('删除失败', '未能删除源文件，请手动处理');
+      }
+    });
+  } catch (e) {
+    showMsg('删除失败', '调用删除功能出错：' + esc(e));
+  }
+}
+
+// ---------------- 初始化 ----------------
+window.addEventListener('pywebviewready', function () {
+  api().get_state().then(function (st) {
+    if (st.prefix) document.getElementById('prefix').value = st.prefix;
+    if (st.seq_mode) document.getElementById('seq').value = st.seq_mode;
+    // v1.3：sep 与 out_name 不记忆——连接符固定默认 -，输出文件名每次为空
+    if (st.keep_orig === false) document.getElementById('keep').checked = false;
+    if (st.output_dir) document.getElementById('outdir').value = st.output_dir;
+    rarAvailable = st.rar_available !== false;
+    var rarOption = document.querySelector('#fmt option[value="rar"]');
+    rarOption.disabled = !rarAvailable;
+    rarOption.textContent = rarAvailable ? 'rar' : 'rar（需要 WinRAR）';
+    if (st.fmt && (st.fmt !== 'rar' || rarAvailable)) document.getElementById('fmt').value = st.fmt;
+    else if (!rarAvailable) document.getElementById('fmt').value = 'zip';
+    if (st.rule) pickRule(st.rule);
+    pv();
+    refreshReadiness();
+  });
+});
+
+['outdir', 'outname', 'fmt', 'prefix', 'seq', 'sep', 'keep'].forEach(function (id) {
+  var el = document.getElementById(id);
+  el.addEventListener(id === 'keep' || id === 'fmt' || id === 'seq' || id === 'sep' ? 'change' : 'input', scheduleReadiness);
+});
+</script>
+</body>
+</html>
