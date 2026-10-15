@@ -51,11 +51,11 @@ python main.py
 ```text
 压缩包整合工具v1.3/
 ├─ 压缩包整合工具v1.3.exe
-├─ _internal/
-└─ config.json
+└─ _internal/
 ```
 
 请不要只复制主程序 EXE；缺少 `_internal` 目录会导致程序无法启动。
+程序首次运行时会在本机生成 `config.json`，它不属于发布包，也不会提交到仓库。
 
 ## 已知缺陷和限制
 
